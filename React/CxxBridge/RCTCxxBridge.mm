@@ -1095,11 +1095,17 @@ struct RCTInstanceCallback : public InstanceCallback {
 {
   [_displayLink registerModuleForFrameUpdates:module withModuleData:moduleData];
 }
+- (void)executeSourceCode:(NSData *)sourceCode sync:(BOOL)sync {
+	[self executeSourceCode:sourceCode sync:sync buz:false];
+}
 
-- (void)executeSourceCode:(NSData *)sourceCode sync:(BOOL)sync
+- (void)executeSourceCode:(NSData *)sourceCode sync:(BOOL)sync buz:(BOOL)buz
 {
   // This will get called from whatever thread was actually executing JS.
   dispatch_block_t completion = ^{
+    if (buz) {
+      return;
+    }
     // Log start up metrics early before processing any other js calls
     [self logStartupFinish];
     // Flush pending calls immediately so we preserve ordering
