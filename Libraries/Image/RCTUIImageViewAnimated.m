@@ -90,7 +90,7 @@ static NSUInteger RCTDeviceFreeMemory() {
   [self stop];
   [self resetAnimatedImage];
 
-  if ([image respondsToSelector:@selector(animatedImageFrameAtIndex:)]) {
+    if ([image respondsToSelector:@selector(animatedImageFrameAtIndex:)] && [image conformsToProtocol:@protocol(RCTAnimatedImage)]) {
     NSUInteger animatedImageFrameCount = ((UIImage<RCTAnimatedImage> *)image).animatedImageFrameCount;
 
     // In case frame count is 0, there is no reason to continue.
