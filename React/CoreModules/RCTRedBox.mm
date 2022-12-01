@@ -80,6 +80,7 @@
   NSString *_lastErrorMessage;
   NSArray<RCTJSStackFrame *> *_lastStackTrace;
   int _lastErrorCookie;
+  BOOL _isBeingPresenting;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -223,7 +224,7 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
   // Remove ANSI color codes from the message
   NSString *messageWithoutAnsi = [self stripAnsi:message];
 
-  BOOL isRootViewControllerPresented = self.rootViewController.presentingViewController != nil;
+  BOOL isRootViewControllerPresented = self.rootViewController.presentingViewController != nil || self->_isBeingPresenting;;
   // Show if this is a new message, or if we're updating the previous message
   BOOL isNew = !isRootViewControllerPresented && !isUpdate;
   BOOL isUpdateForSameMessage = !isNew &&
@@ -243,7 +244,10 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithCoder : (NSCoder *)aDecoder)
       [_stackTraceTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
                                   atScrollPosition:UITableViewScrollPositionTop
                                           animated:NO];
-      [RCTKeyWindow().rootViewController presentViewController:self.rootViewController animated:YES completion:nil];
+      self->_isBeingPresenting = YES;
+      [RCTKeyWindow().rootViewController presentViewController:self.rootViewController animated:YES completion:^{
+        self->_isBeingPresenting = NO;
+      }];
     }
   }
 }
